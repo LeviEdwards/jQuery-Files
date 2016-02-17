@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>jQuery UI Accordion - Open on hoverintent</title>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <script>
+  $(function() {
+    $( "#accordion" ).accordion({
+      event: "click hoverintent"
+    });
+  });
+  $.event.special.hoverintent = {
+    setup: function() {
+      $( this ).bind( "mouseover", jQuery.event.special.hoverintent.handler );
+    },
+    teardown: function() {
+      $( this ).unbind( "mouseover", jQuery.event.special.hoverintent.handler );
+    },
+    handler: function( event ) {
+      var currentX, currentY, timeout,
+        args = arguments,
+        target = $( event.target ),
+        previousX = event.pageX,
+        previousY = event.pageY;
+ 
+      function track( event ) {
+        currentX = event.pageX;
+        currentY = event.pageY;
+      };
+ 
+      function clear() {
+        target
+          .unbind( "mousemove", track )
+          .unbind( "mouseout", clear );
+        clearTimeout( timeout );
+      }
+ 
+      function handler() {
+        var prop,
+          orig = event;
+ 
+        if ( ( Math.abs( previousX - currentX ) +
+            Math.abs( previousY - currentY ) ) < 7 ) {
+          clear();
+ 
+          event = $.Event( "hoverintent" );
+          for ( prop in orig ) {
+            if ( !( prop in event ) ) {
+              event[ prop ] = orig[ prop ];
+            }
+          }
+          delete event.originalEvent;
+ 
+          target.trigger( event );
+        } else {
+          previousX = currentX;
+          previousY = currentY;
+          timeout = setTimeout( handler, 100 );
+        }
+      }
+ 
+      timeout = setTimeout( handler, 100 );
+      target.bind({
+        mousemove: track,
+        mouseout: clear
+      });
+    }
+  };
+  $(function() {
+    var icons = {
+      header: "ui-icon-circle-arrow-e",
+      activeHeader: "ui-icon-circle-arrow-s"
+    };
+    $( "#accordion" ).accordion({
+      icons: icons
+    });
+    $( "#toggle" ).button().click(function() {
+      if ( $( "#accordion" ).accordion( "option", "icons" ) ) {
+        $( "#accordion" ).accordion( "option", "icons", null );
+      } else {
+        $( "#accordion" ).accordion( "option", "icons", icons );
+      }
+    });
+  });
+  $(function() {
+    $( "#accordion" ).accordion({
+      heightStyle: "content"
+    });
+  });
+  </script>
+</head>
+<body>
+
+<h1 class="head">An Accordion That Responds on Hover</h1>    
+ 
+<div id="accordion">
+  <h3>First</h3>
+      <div>
+        <p>
+        This dropdown is the first of four dropdowns. It will close as soon as you click another drowdown on the accordion. 
+        </p>
+        <ul>
+          <li>List item one</li>
+          <li>List item two</li>
+          <li>List item three</li>
+        </ul>
+      </div>
+      <h3>Second</h3>
+      <div>
+        <p>
+        This is the second of the accordoin drowdowns. It is here now, and it will hide as soon as another dropdown item is selected. 
+        </p>
+      </div>
+      <h3>Third</h3>
+      <div>
+        <p>
+        Nam enim risus, molestie et, porta ac, aliquam ac, risus. Quisque lobortis.
+        Phasellus pellentesque purus in massa. Aenean in pede. Phasellus ac libero
+        ac tellus pellentesque semper. Sed ac felis. Sed commodo, magna quis
+        lacinia ornare, quam ante aliquam nisi, eu iaculis leo purus venenatis dui.
+        </p>
+        
+      </div>
+      <h3>Fourth</h3>
+      <div>
+        <p>
+        Cras dictum. Pellentesque habitant morbi tristique senectus et netus
+        et malesuada fames ac turpis egestas. Vestibulum ante ipsum primis in
+        faucibus orci luctus et ultrices posuere cubilia Curae; Aenean lacinia
+        mauris vel est.
+        </p>
+        <p>
+        Suspendisse eu nisl. Nullam ut libero. Integer dignissim consequat lectus.
+        Class aptent taciti sociosqu ad litora torquent per conubia nostra, per
+        inceptos himenaeos.
+        </p>
+      </div>
+</div>
+ 
+ 
+</body>
+</html>

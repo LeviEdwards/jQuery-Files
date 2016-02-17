@@ -75,3 +75,7 @@ button {
     width: 120px;
     display: inline-block
 }
+
+#accordion{
+    margin-right:50%;
+}
